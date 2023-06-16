@@ -3,7 +3,7 @@ import configparser
 import telebot
 
 # Inicializar el bot con el token proporcionado por BotFather
-bot = telebot.TeleBot('TOKEN_DEL_BOT')
+bot = telebot.TeleBot('5681732028:AAErgYe8EPUMFz9kg4whvaHgefroADzr1fE')
 
 # Función para mostrar el banner inicial
 def banner():
