@@ -119,7 +119,7 @@ def process_group_selection(message, client):
                 if user.first_name:
                     first_name = user.first_name
                 else:
-                    first_name = ""
+first_name = ""
                 if user.last_name:
                     last_name = user.last_name
                 else:
@@ -128,5 +128,7 @@ def process_group_selection(message, client):
                 writer.writerow([username, user.id, user.access_hash, name, target_group.title, target_group.id])
 
         bot.reply_to(message, "Miembros extraídos exitosamente.")
+#    except Exception as e:
+#        bot.reply_to(message, f"Ocurrió un error: {str(e)}")
         
 bot.polling()
