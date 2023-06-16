@@ -7,10 +7,16 @@ import time
 cpass = configparser.RawConfigParser()
 cpass.read('config.data')
 
-bot = telebot.TeleBot('5681732028:AAErgYe8EPUMFz9kg4whvaHgefroADzr1fE')
+bot = telebot.TeleBot('TOKEN_DEL_BOT')
 
 @bot.message_handler(commands=['start'])
 def start(message):
+    markup = types.ReplyKeyboardMarkup(one_time_keyboard=True)
+    msg = bot.reply_to(message, "Ingrese su API ID:", reply_markup=markup)
+    bot.register_next_step_handler(msg, process_api_id)
+
+@bot.message_handler(commands=['scraper'])
+def scraper(message):
     try:
         api_id = cpass['cred']['id']
         api_hash = cpass['cred']['hash']
@@ -27,6 +33,30 @@ def start(message):
         bot.register_next_step_handler(msg, process_verification_code, client)
     else:
         scrape_members(message, client)
+
+def process_api_id(message):
+    api_id = message.text
+    msg = bot.reply_to(message, "Ingrese su Hash ID:")
+    bot.register_next_step_handler(msg, process_hash_id, api_id)
+
+def process_hash_id(message, api_id):
+    hash_id = message.text
+    msg = bot.reply_to(message, "Ingrese su número de teléfono:")
+    bot.register_next_step_handler(msg, process_phone_number, api_id, hash_id)
+
+def process_phone_number(message, api_id, hash_id):
+    phone_number = message.text
+
+    cpass = configparser.RawConfigParser()
+    cpass.add_section('cred')
+    cpass.set('cred', 'id', api_id)
+    cpass.set('cred', 'hash', hash_id)
+    cpass.set('cred', 'phone', phone_number)
+
+    with open('config.data', 'w') as setup:
+        cpass.write(setup)
+
+    bot.reply_to(message, "Configuración guardada exitosamente.")
 
 def process_verification_code(message, client):
     code = message.text
@@ -90,7 +120,7 @@ def process_group_selection(message, groups):
             if user.last_name:
                 last_name = user.last_name
             else:
-                last_name = ""
+last_name = ""
             name = (first_name + ' ' + last_name).strip()
             writer.writerow([username, user.id, user.access_hash, name, target_group.title, target_group.id])
 
