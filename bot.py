@@ -1,13 +1,8 @@
 import telebot
 from telebot import types
 import configparser
-import csv
-import time
 
 bot = telebot.TeleBot('5681732028:AAErgYe8EPUMFz9kg4whvaHgefroADzr1fE')
-
-cpass = configparser.RawConfigParser()
-cpass.read('config.data')
 
 @bot.message_handler(commands=['start'])
 def start(message):
@@ -43,6 +38,9 @@ def process_phone_number(message, api_id, hash_id):
         cpass.write(setup)
 
     bot.reply_to(message, "Configuración guardada exitosamente.")
+
+cpass = configparser.RawConfigParser()
+cpass.read('config.data')
 
 @bot.message_handler(commands=['scraper'])
 def start(message):
