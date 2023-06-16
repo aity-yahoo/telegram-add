@@ -1,38 +1,22 @@
 import telebot
 from telebot import types
 import configparser
-import csv
-import time
+
+bot = telebot.TeleBot('5681732028:AAErgYe8EPUMFz9kg4whvaHgefroADzr1fE')
 
 cpass = configparser.RawConfigParser()
 cpass.read('config.data')
 
-bot = telebot.TeleBot('TOKEN_DEL_BOT')
-
 @bot.message_handler(commands=['start'])
 def start(message):
     markup = types.ReplyKeyboardMarkup(one_time_keyboard=True)
+    bot.reply_to(message, "¡Bienvenido! Este bot te permite añadir usuarios a tu grupo de Telegram.", reply_markup=markup)
+
+@bot.message_handler(commands=['setup'])
+def setup(message):
+    markup = types.ReplyKeyboardMarkup(one_time_keyboard=True)
     msg = bot.reply_to(message, "Ingrese su API ID:", reply_markup=markup)
     bot.register_next_step_handler(msg, process_api_id)
-
-@bot.message_handler(commands=['scraper'])
-def scraper(message):
-    try:
-        api_id = cpass['cred']['id']
-        api_hash = cpass['cred']['hash']
-        phone = cpass['cred']['phone']
-        client = TelegramClient(phone, api_id, api_hash)
-    except KeyError:
-        bot.reply_to(message, "[!] Ejecute /setup primero.")
-        return
-    
-    client.connect()
-    if not client.is_user_authorized():
-        client.send_code_request(phone)
-        msg = bot.reply_to(message, "Ingrese el código de verificación:")
-        bot.register_next_step_handler(msg, process_verification_code, client)
-    else:
-        scrape_members(message, client)
 
 def process_api_id(message):
     api_id = message.text
@@ -57,6 +41,25 @@ def process_phone_number(message, api_id, hash_id):
         cpass.write(setup)
 
     bot.reply_to(message, "Configuración guardada exitosamente.")
+
+@bot.message_handler(commands=['scraper'])
+def start(message):
+    try:
+        api_id = cpass['cred']['id']
+        api_hash = cpass['cred']['hash']
+        phone = cpass['cred']['phone']
+        client = TelegramClient(phone, api_id, api_hash)
+    except KeyError:
+        bot.reply_to(message, "Ejecute /setup primero.")
+        return
+    
+    client.connect()
+    if not client.is_user_authorized():
+        client.send_code_request(phone)
+        msg = bot.reply_to(message, "Ingrese el código de verificación:")
+        bot.register_next_step_handler(msg, process_verification_code, client)
+    else:
+        scrape_members(message, client)
 
 def process_verification_code(message, client):
     code = message.text
@@ -120,7 +123,7 @@ def process_group_selection(message, groups):
             if user.last_name:
                 last_name = user.last_name
             else:
-last_name = ""
+                last_name = ""
             name = (first_name + ' ' + last_name).strip()
             writer.writerow([username, user.id, user.access_hash, name, target_group.title, target_group.id])
 
