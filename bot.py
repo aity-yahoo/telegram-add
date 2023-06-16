@@ -1,66 +1,37 @@
+import telebot
+from telebot import types
 import configparser
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 
-# Función para manejar el comando /start
-def start(update, context):
-    chat_id = update.message.chat_id
-    context.bot.send_message(chat_id=chat_id, text="¡Hola! Por favor, ingresa los siguientes datos:")
+bot = telebot.TeleBot('5681732028:AAErgYe8EPUMFz9kg4whvaHgefroADzr1fE')
 
-# Función para manejar el mensaje de texto
-def handle_text(update, context):
-    chat_id = update.message.chat_id
-    text = update.message.text
+@bot.message_handler(commands=['start'])
+def start(message):
+    markup = types.ReplyKeyboardMarkup(one_time_keyboard=True)
+    msg = bot.reply_to(message, "Ingrese su API ID:", reply_markup=markup)
+    bot.register_next_step_handler(msg, process_api_id)
 
-    # Almacenar los datos ingresados en el archivo de configuración
+def process_api_id(message):
+    api_id = message.text
+    msg = bot.reply_to(message, "Ingrese su Hash ID:")
+    bot.register_next_step_handler(msg, process_hash_id, api_id)
+
+def process_hash_id(message, api_id):
+    hash_id = message.text
+    msg = bot.reply_to(message, "Ingrese su número de teléfono:")
+    bot.register_next_step_handler(msg, process_phone_number, api_id, hash_id)
+
+def process_phone_number(message, api_id, hash_id):
+    phone_number = message.text
+
     cpass = configparser.RawConfigParser()
     cpass.add_section('cred')
-    cpass.set('cred', 'id', text)
-    context.bot.send_message(chat_id=chat_id, text="ID de API guardado. Por favor, ingresa el ID de hash:")
-    context.user_data['cpass'] = cpass
+    cpass.set('cred', 'id', api_id)
+    cpass.set('cred', 'hash', hash_id)
+    cpass.set('cred', 'phone', phone_number)
 
-# Función para manejar el mensaje de texto
-def handle_hash(update, context):
-    chat_id = update.message.chat_id
-    text = update.message.text
-
-    # Almacenar los datos ingresados en el archivo de configuración
-    cpass = context.user_data['cpass']
-    cpass.set('cred', 'hash', text)
-    context.bot.send_message(chat_id=chat_id, text="ID de hash guardado. Por favor, ingresa el número de teléfono:")
-
-# Función para manejar el mensaje de texto
-def handle_phone(update, context):
-    chat_id = update.message.chat_id
-    text = update.message.text
-
-    # Almacenar los datos ingresados en el archivo de configuración
-    cpass = context.user_data['cpass']
-    cpass.set('cred', 'phone', text)
-
-    # Guardar la configuración en el archivo
     with open('config.data', 'w') as setup:
         cpass.write(setup)
 
-    context.bot.send_message(chat_id=chat_id, text="Número de teléfono guardado. Configuración completada.")
+    bot.reply_to(message, "Configuración guardada exitosamente.")
 
-def main():
-    # Inicializar el bot de Telegram
-    updater = Updater("5681732028:AAErgYe8EPUMFz9kg4whvaHgefroADzr1fE")  # Reemplaza "TOKEN" con tu token de bot real
-
-    # Obtener el despachador para registrar los controladores
-    dp = updater.dispatcher
-
-    # Agregar los controladores de comandos y mensajes de texto
-    dp.add_handler(CommandHandler("start", start))
-    dp.add_handler(MessageHandler(Filters.text & ~Filters.command, handle_text))
-    dp.add_handler(MessageHandler(Filters.text & ~Filters.command, handle_hash))
-    dp.add_handler(MessageHandler(Filters.text & ~Filters.command, handle_phone))
-
-    # Iniciar el bot
-    updater.start_polling()
-
-    # Mantener al bot en ejecución hasta que se presione Ctrl+C
-    # updater.idle()
-
-if name == 'main':
-    main()
+bot.polling()
