@@ -128,10 +128,5 @@ def process_group_selection(message, client):
                 writer.writerow([username, user.id, user.access_hash, name, target_group.title, target_group.id])
 
         bot.reply_to(message, "Se han obtenido los miembros correctamente.")
-
-
-
-
-
-
+        
 bot.polling()
