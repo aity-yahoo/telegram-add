@@ -1,68 +1,66 @@
-import os
 import configparser
-import telebot
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 
-# Inicializar el bot con el token proporcionado por BotFather
-bot = telebot.TeleBot('5681732028:AAErgYe8EPUMFz9kg4whvaHgefroADzr1fE')
+# Función para manejar el comando /start
+def start(update, context):
+    chat_id = update.message.chat_id
+    context.bot.send_message(chat_id=chat_id, text="¡Hola! Por favor, ingresa los siguientes datos:")
 
-# Función para mostrar el banner inicial
-def banner():
-    os.system('clear')
-    banner_text = """
-╔═╗┌─┐┌┬┐┬ ┬┌─┐
-╚═╗├┤  │ │ │├─┘
-╚═╝└─┘ ┴ └─┘┴
+# Función para manejar el mensaje de texto
+def handle_text(update, context):
+    chat_id = update.message.chat_id
+    text = update.message.text
 
-Version : 1.01
-Subscribe Termux Professor on Youtube
-www.youtube.com/c/TermuxProfessorYT
-    """
-    bot.send_message(chat_id, banner_text)
-
-# Handler para el comando /start
-@bot.message_handler(commands=['start'])
-def handle_start(message):
-    chat_id = message.chat.id
-    banner()
-    bot.send_message(chat_id, "[+] Installing requirements ...")
-    os.system('python3 -m pip install telethon')
-    os.system('pip3 install telethon')
-    banner()
-    bot.send_message(chat_id, "Enter API ID:")
-    bot.register_next_step_handler(message, get_api_id)
-
-# Función para obtener el ID de la API
-def get_api_id(message):
-    chat_id = message.chat.id
-    api_id = message.text
-    bot.send_message(chat_id, "Enter Hash ID:")
-    bot.register_next_step_handler(message, get_hash_id, api_id)
-
-# Función para obtener el Hash ID
-def get_hash_id(message, api_id):
-    chat_id = message.chat.id
-    hash_id = message.text
-    bot.send_message(chat_id, "Enter Phone Number:")
-    bot.register_next_step_handler(message, save_credentials, api_id, hash_id)
-
-# Función para guardar las credenciales en el archivo de configuración
-def save_credentials(message, api_id, hash_id):
-    chat_id = message.chat.id
-    phone_number = message.text
-    
-    # Crear y guardar las credenciales en el archivo de configuración
+    # Almacenar los datos ingresados en el archivo de configuración
     cpass = configparser.RawConfigParser()
     cpass.add_section('cred')
-    cpass.set('cred', 'id', api_id)
-    cpass.set('cred', 'hash', hash_id)
-    cpass.set('cred', 'phone', phone_number)
+    cpass.set('cred', 'id', text)
+    context.bot.send_message(chat_id=chat_id, text="ID de API guardado. Por favor, ingresa el ID de hash:")
+    context.user_data['cpass'] = cpass
+
+# Función para manejar el mensaje de texto
+def handle_hash(update, context):
+    chat_id = update.message.chat_id
+    text = update.message.text
+
+    # Almacenar los datos ingresados en el archivo de configuración
+    cpass = context.user_data['cpass']
+    cpass.set('cred', 'hash', text)
+    context.bot.send_message(chat_id=chat_id, text="ID de hash guardado. Por favor, ingresa el número de teléfono:")
+
+# Función para manejar el mensaje de texto
+def handle_phone(update, context):
+    chat_id = update.message.chat_id
+    text = update.message.text
+
+    # Almacenar los datos ingresados en el archivo de configuración
+    cpass = context.user_data['cpass']
+    cpass.set('cred', 'phone', text)
+
+    # Guardar la configuración en el archivo
     with open('config.data', 'w') as setup:
         cpass.write(setup)
-    
-    bot.send_message(chat_id, "[+] Setup complete!")
-    bot.send_message(chat_id, "[+] Now you can run any tool!")
-    bot.send_message(chat_id, "[+] Make sure to read the docs for installation and API setup")
-    bot.send_message(chat_id, "[+] https://github.com/termuxprofessor/TeleGram-Scraper-Adder/blob/master/README.md")
 
-# Iniciar el bot
-bot.infinity_polling()
+    context.bot.send_message(chat_id=chat_id, text="Número de teléfono guardado. Configuración completada.")
+
+def main():
+    # Inicializar el bot de Telegram
+    updater = Updater("5681732028:AAErgYe8EPUMFz9kg4whvaHgefroADzr1fE")  # Reemplaza "TOKEN" con tu token de bot real
+
+    # Obtener el despachador para registrar los controladores
+    dp = updater.dispatcher
+
+    # Agregar los controladores de comandos y mensajes de texto
+    dp.add_handler(CommandHandler("start", start))
+    dp.add_handler(MessageHandler(Filters.text & ~Filters.command, handle_text))
+    dp.add_handler(MessageHandler(Filters.text & ~Filters.command, handle_hash))
+    dp.add_handler(MessageHandler(Filters.text & ~Filters.command, handle_phone))
+
+    # Iniciar el bot
+    updater.start_polling()
+
+    # Mantener al bot en ejecución hasta que se presione Ctrl+C
+    # updater.idle()
+
+if name == 'main':
+    main()
