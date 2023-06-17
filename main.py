@@ -5,7 +5,8 @@ import scraper
 from keep_alive import keep_alive
 import os
 
-#keep_alive()
+#
+keep_alive()
 bot = telebot.TeleBot('5759486107:AAEn3ZxHZPrFCs1wsfLasDEdFK9YrThimBs')
 
 @bot.message_handler(commands=['start'])
