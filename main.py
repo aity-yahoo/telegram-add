@@ -1,7 +1,7 @@
 import telebot
 from telebot import types
 import configparser
-import scraper
+from scraper import start_scraper
 from keep_alive import keep_alive
 
 keep_alive()
