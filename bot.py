@@ -129,5 +129,5 @@ def process_group_selection(message, client):
 
         bot.reply_to(message, "Miembros extraídos exitosamente.")
         
-bot.polling()
+        bot.polling()
 
