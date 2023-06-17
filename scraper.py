@@ -88,3 +88,6 @@ def process_group_selection(message, client, groups):
                 writer.writerow([username, user.id, user.access_hash, name, target_group.title, target_group.id])
 
         bot.reply_to(message, "Miembros extraídos exitosamente.")
+    except IndexError:
+        bot.reply_to(message, "Índice de grupo inválido.")
+
