@@ -41,8 +41,4 @@ def process_phone_number(message, api_id, hash_id):
         cpass.write(setup)
     bot.reply_to(message, "Configuración guardada exitosamente.")
 
-@bot.message_handler(commands=['scraper'])
-def start_scraper(message):
-    scraper.start_scraper(bot, message)
-
 bot.infinity_polling()
