@@ -7,7 +7,7 @@ import time
 cpass = configparser.RawConfigParser()
 cpass.read('config.data')
 
-bot = telebot.TeleBot('6095960390:AAGEXdeBouwPlISRgiAqmgooAKvUCPerjuA')
+bot = telebot.TeleBot('5759486107:AAEn3ZxHZPrFCs1wsfLasDEdFK9YrThimBs')
 
 @bot.message_handler(commands=['scraper'])
 def scraper(message):
