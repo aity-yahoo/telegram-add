@@ -6,7 +6,7 @@ from keep_alive import keep_alive
 import os
 
 #keep_alive()
-bot = telebot.TeleBot('6095960390:AAGEXdeBouwPlISRgiAqmgooAKvUCPerjuA')
+bot = telebot.TeleBot('5759486107:AAEn3ZxHZPrFCs1wsfLasDEdFK9YrThimBs')
 
 @bot.message_handler(commands=['start'])
 def start(message):
