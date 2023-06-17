@@ -2,6 +2,13 @@ import telebot
 from telebot import types
 import configparser
 
+bot = telebot.TeleBot('5681732028:AAErgYe8EPUMFz9kg4whvaHgefroADzr1fE')
+
+@bot.message_handler(commands=['start'])
+def start(message):
+    markup = types.ReplyKeyboardMarkup(one_time_keyboard=True)
+    bot.reply_to(message, "¡Bienvenido! Este bot te permite añadir usuarios a tu grupo de Telegram.", reply_markup=markup)
+
 @bot.message_handler(commands=['setup'])
 def setup(message):
     markup = types.ReplyKeyboardMarkup(one_time_keyboard=True)
@@ -32,4 +39,5 @@ def process_phone_number(message, api_id, hash_id):
 
     bot.reply_to(message, "Configuración guardada exitosamente.")
 
-bot.polling()
+if __name__ == "__main__":
+    bot.polling()
