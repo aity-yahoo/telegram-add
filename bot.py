@@ -127,6 +127,6 @@ def process_group_selection(message, client):
                 name = (first_name + ' ' + last_name).strip()
                 writer.writerow([username, user.id, user.access_hash, name, target_group.title, target_group.id])
                 
-	bot.reply_to(message, "Miembros extraídos exitosamente.")
+	 bot.reply_to(message, "Miembros extraídos exitosamente.")
 
 bot.infinity_polling()
