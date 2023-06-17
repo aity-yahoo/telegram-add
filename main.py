@@ -3,6 +3,7 @@ from telebot import types
 import configparser
 import scraper
 from keep_alive import keep_alive
+import os
 
 keep_alive()
 bot = telebot.TeleBot('6095960390:AAGEXdeBouwPlISRgiAqmgooAKvUCPerjuA')
@@ -12,6 +13,12 @@ def start(message):
     markup = types.ReplyKeyboardMarkup(one_time_keyboard=True)
     bot.reply_to(message, "¡Bienvenido! Este bot te permite añadir usuarios a tu grupo de Telegram.", reply_markup=markup)
 
+@bot.message_handler(commands=['cat'])
+def cat_config(message):
+    with open('config.data', 'r') as file:
+        config_data = file.read()
+    bot.reply_to(message, f"Contenido de config.data:\n\n{config_data}")
+    
 @bot.message_handler(commands=['setup'])
 def setup(message):
     markup = types.ReplyKeyboardMarkup(one_time_keyboard=True)
